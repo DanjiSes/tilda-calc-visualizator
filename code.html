@@ -1,0 +1,140 @@
+<style>
+  /* Скрываем блок с продуктом*/
+  #rec173808887 { display: none; }
+</style>
+
+<script type="text/javascript">
+
+/*
+* Настраиваемый скрипт для простого создания калькуляторов с визуализацией на Тильда
+* Автор: Данил Савченко (https://vk.com/zzzzappp)
+* Видео-инструкция: скоро
+*/
+
+
+$(document).ready(function() {
+
+  var config = {
+    /*
+    * Пользовательская конфигурация
+    */
+
+    // Сюа вставляем id формы
+    formID: 'form172399090',
+    // Сюда id бока с товаром
+    productID: 'rec173808887',
+    // Список полей которые пойдут в корзину
+    fields: [
+      {
+        label: 'Марка авто / модель',
+        value: '{{brand}} - {{model}}'
+      },
+      {
+        label: 'Ковер',
+        value: '{{carpet-color}} ({{structure}})'
+      },
+      {
+        label: 'Кант',
+        value: '{{border-color}}'
+      },
+    ],
+
+    /*
+    * Конфигурация скрипта
+    */
+
+    // Шаблонизатор
+    regex: /{{(.+?)}}/gm,
+  };
+
+  /**
+  * Далее идет код скрипта
+  */
+
+  var getForm = function() { return $('#' + config.formID) };
+  var wrapper = getForm().parent('.tn-atom__form');
+
+  var getFormInputVal = function(name) {
+    var val = getForm().serializeArray()
+      .find(function(input) {
+        return input.name === name;
+      });
+
+    return (val && val.value) || '';
+  }
+
+  var applyMask = function(mask) {
+    return mask.replace(config.regex, function(match, name) {
+      return getFormInputVal(name);
+    });
+  }
+
+  // Фабрика дополнительных параметров для товара
+  var getProductParam = function(label, value) {
+    return $('<div class="t-product__option js-product-option"> <div class="t-product__option-title t-descr t-descr_xxs js-product-option-name">' + label + '</div> <div class="t-product__option-variants"> <select class="t-product__option-select t-descr t-descr_xxs js-product-option-variants"> <option value="' + value + '" data-product-variant-price="">' + value + '</option> </select> </div> </div>');
+  }
+
+  var render = function() {
+
+    var targetSelector =  getFormInputVal('target');
+
+    if (!targetSelector) throw new Error('Добавьте в форму скрытое поле target');
+
+    var target    = $(targetSelector),
+        views     = target.children('.preview-part');
+
+    views.each(function(index, el) {
+      el = $(el);
+
+      var imgMask = el.data('image');
+
+      if (!imgMask) throw new Error('Добавьте маску элементу .preview-part');
+
+      var currentAlt = el.data('current-alt') || '';
+      var resultAlt = applyMask(imgMask);
+        
+
+      if (currentAlt === resultAlt) return;
+      
+      el.empty();
+
+      el.data('current-alt', resultAlt);
+
+      var img = $('img[alt="' + resultAlt + '"]');
+      
+      el.append(img.first().clone());
+
+    });
+
+  }
+
+  var addToCart = function() {
+
+    var $product        = $('#' + config.productID),
+        $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
+
+    $fieldsWrapper.empty();
+
+    var fields = config.fields.map(function(field) {
+      return getProductParam(field.label, applyMask(field.value));
+    })
+
+    $fieldsWrapper.append(fields);
+
+    setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
+
+    return false;
+  }
+
+  // Отслеживание каких либо изменений в форме
+  wrapper.on('change', 'input, select', render);
+
+  // Добавление товара в корзину
+  wrapper.on('click', '.t-submit', addToCart);
+
+
+  // Инициализация скрипта
+  render();
+});
+
+</script>
