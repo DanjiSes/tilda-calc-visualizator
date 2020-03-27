@@ -67,6 +67,21 @@ $(document).ready(function() {
   // Инициализация скрипта
   render();
 
+  // Динамическое отображение моделей машин
+  getForms().parent('.tn-atom__form').on('change', 'select[name="brand"]', function(e) {
+    var $this = $(e.target),
+        value = $this.val();
+
+    // Скрытие ненужных брендов машин
+    $('#calc-hidden-models').remove();
+    $('body').append('<style id="calc-hidden-models">select[name="model"] > option {display:none} select[name="model"] > option[value*="' + value + '"] {display:block}</style>');
+
+    var select = $('select[name="model"]');
+    var option = select.children('option[value*="' + value + '"]');
+
+    select.val(option.val());
+  });
+
   /**
   * Далее идет код скрипта
   */
@@ -125,10 +140,6 @@ $(document).ready(function() {
         }
       }
     }
-
-    // Скрытие ненужных брендов машин
-    $('#calc-hidden-models').remove();
-    $('body').append('<style id="calc-hidden-models">select[name="model"] > option {display:none} select[name="model"] > option[value*="' + getFormInputVal('brand') + '"] {display:block}</style>');
 
     // Применяю визуализацию
     views.each(function(index, el) {
