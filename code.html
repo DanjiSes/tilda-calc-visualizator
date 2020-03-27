@@ -1,7 +1,9 @@
 <script type="text/javascript">
 
 /*
-* Настраиваемый скрипт для простого создания калькуляторов с визуализацией на Тильда
+* Настраиваемый скрипт для простого создания
+* калькуляторов с визуализацией на Тильда
+*
 * Автор: Данил Савченко (https://vk.com/zzzzappp)
 * Видео-инструкция: скоро
 */
@@ -14,8 +16,8 @@ $(document).ready(function() {
     * Пользовательская конфигурация
     */
 
-    // Сюа вставляем id формы
-    formID: 'form172399090',
+    // Сюа вставляем id блока с калькулятором
+    calcBlockId: 'rec172399090',
     // Сюда id бока с товаром
     productID: 'rec173808887',
     // Список полей которые пойдут в корзину
@@ -43,15 +45,25 @@ $(document).ready(function() {
     regex: /{{(.+?)}}/gm,
   };
 
+
+  // Отслеживание каких либо изменений в форме
+  getForms().parent('.tn-atom__form').on('change', 'input, select', render);
+
+  // Добавление товара в корзину
+  getForms().parent('.tn-atom__form').on('click', '.t-submit', addToCart);
+
+
+  // Инициализация скрипта
+  render();
+
   /**
   * Далее идет код скрипта
   */
 
-  var getForm = function() { return $('#' + config.formID) };
-  var wrapper = getForm().parent('.tn-atom__form');
+  function getForms() { return $('#' + config.calcBlockId).find('form') };
 
-  var getFormInputVal = function(name) {
-    var val = getForm().serializeArray()
+  function getFormInputVal(name) {
+    var val = getForms().serializeArray()
       .find(function(input) {
         return input.name === name;
       });
@@ -59,18 +71,18 @@ $(document).ready(function() {
     return (val && val.value) || '';
   }
 
-  var applyMask = function(mask) {
+  function applyMask(mask) {
     return mask.replace(config.regex, function(match, name) {
       return getFormInputVal(name);
     });
   }
 
   // Фабрика дополнительных параметров для товара
-  var getProductParam = function(label, value) {
+  function getProductParam(label, value) {
     return $('<div class="t-product__option js-product-option"> <div class="t-product__option-title t-descr t-descr_xxs js-product-option-name">' + label + '</div> <div class="t-product__option-variants"> <select class="t-product__option-select t-descr t-descr_xxs js-product-option-variants"> <option value="' + value + '" data-product-variant-price="">' + value + '</option> </select> </div> </div>');
   }
 
-  var render = function() {
+  function render() {
 
     var targetSelector =  getFormInputVal('target');
 
@@ -106,7 +118,8 @@ $(document).ready(function() {
 
   }
 
-  var addToCart = function() {
+  function addToCart() {
+    
 
     var $product        = $('#' + config.productID),
         $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
@@ -128,15 +141,6 @@ $(document).ready(function() {
     return false;
   }
 
-  // Отслеживание каких либо изменений в форме
-  wrapper.on('change', 'input, select', render);
-
-  // Добавление товара в корзину
-  wrapper.on('click', '.t-submit', addToCart);
-
-
-  // Инициализация скрипта
-  render();
 });
 
 </script>
