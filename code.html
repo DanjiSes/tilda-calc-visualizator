@@ -118,13 +118,17 @@ $(document).ready(function() {
           var masks   = field.masks;
 
           var styles = values.map(function(value) {
-            return '[name="' + field.name + '"][value~="' + applyMask(value) + '"],[name="' + field.name + '"][value="' + value + '"]~.t-img-select__indicator {display: none}';
+            return '[name="' + field.name + '"][value="' + value + '"]~.t-img-select__indicator {display: none}';
           }).join('');
 
           $('body').append('<style id="calc-hidden-fields">' + styles + '</style>');
         }
       }
     }
+
+    // Скрытие ненужных брендов машин
+    $('#calc-hidden-models').remove();
+    $('body').append('<style id="calc-hidden-models">select[name="model"] > option {display:none} select[name="model"] > option[value*="' + getFormInputVal('brand') + '"] {display:block}</style>');
 
     // Применяю визуализацию
     views.each(function(index, el) {
