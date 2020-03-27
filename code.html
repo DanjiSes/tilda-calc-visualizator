@@ -170,7 +170,7 @@ $(document).ready(function() {
 
     var sum = getFormInputVal('sum');
 
-    console.log($product.find('.t744__price-value').html(sum));
+    $product.find('.t744__price-value').html(sum);
 
     setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
 
