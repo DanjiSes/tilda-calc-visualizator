@@ -35,6 +35,17 @@ $(document).ready(function() {
         value: '{{border-color}}'
       },
     ],
+    hidden: [
+      {
+        conditional: 'structure=Соты',
+        fields: [
+          {
+            name: 'carpet-color',
+            values: 'бордовый,желтый'
+          }
+        ]
+      }
+    ],
     debug: true,
 
     /*
@@ -91,6 +102,29 @@ $(document).ready(function() {
     var target    = $(targetSelector),
         views     = target.children('.preview-part');
 
+    // Скрываю небоходимые поля
+    $('#calc-hidden-fields').remove();
+
+    for (var i = 0; i < config.hidden.length; i++) {
+      var hide = config.hidden[i];
+      var cond = hide.conditional.split('=');
+
+      if (getFormInputVal(cond[0]) === cond[1]) {
+        var fields = hide.fields;
+
+        for (var f = 0; f < fields.length; f++) {
+          var field   = fields[f];
+          var values  = field.values.split(',')
+
+          var styles = values.map(function(value) {
+            return '[name="' + field.name + '"][value="' + value + '"]~.t-img-select__indicator {display: none}';
+          }).join('');
+
+          $('body').append('<style id="calc-hidden-fields">' + styles + '</style>');
+        }
+      }
+    }
+
     views.each(function(index, el) {
       el = $(el);
 
@@ -119,7 +153,7 @@ $(document).ready(function() {
   }
 
   function addToCart() {
-    
+
 
     var $product        = $('#' + config.productID),
         $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
@@ -144,3 +178,7 @@ $(document).ready(function() {
 });
 
 </script>
+
+<style>
+  .hidden { display: none !important; }
+</style>
