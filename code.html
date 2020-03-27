@@ -38,6 +38,7 @@ $(document).ready(function() {
         value: '{{border-color}}'
       },
     ],
+    debug: true,
 
     /*
     * Конфигурация скрипта
@@ -95,6 +96,8 @@ $(document).ready(function() {
         
 
       if (currentAlt === resultAlt) return;
+
+      config.debug && console.log(resultAlt);
       
       el.empty();
 
@@ -120,6 +123,10 @@ $(document).ready(function() {
     })
 
     $fieldsWrapper.append(fields);
+
+    var sum = getFormInputVal('sum');
+
+    console.log($product.find('.t744__price-value').html(sum));
 
     setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
 
