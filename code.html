@@ -117,7 +117,7 @@ $(document).ready(function() {
           var values  = field.values.split(',')
 
           var styles = values.map(function(value) {
-            return '[name="' + field.name + '"][value=~"' + applyMask(value) + '"],[name="' + field.name + '"][value="' + value + '"]~.t-img-select__indicator {display: none}';
+            return '[name="' + field.name + '"][value~="' + applyMask(value) + '"],[name="' + field.name + '"][value="' + value + '"]~.t-img-select__indicator {display: none}';
           }).join('');
 
           $('body').append('<style id="calc-hidden-fields">' + styles + '</style>');
@@ -125,6 +125,7 @@ $(document).ready(function() {
       }
     }
 
+    // Применяю визуализацию
     views.each(function(index, el) {
       el = $(el);
 
