@@ -5,20 +5,28 @@
 
 		// Отслеживание каких либо изменений в форме
   	$('.tn-atom__form').on('change', 'select[name="brand"]', updateModelsList);
+  	$('.tn-atom__form').on('change', 'select[name="brand"], select[name="model"]', updateTextKeys);
 
   	function updateModelsList() {
-  		var model 			= $('select[name="brand"]').val();
-  		var modelBrands = brands[model];
+  		var brand 			= $('select[name="brand"]').val();
+  		var brandModels = brands[brand];
 
-  		modelBrands = modelBrands.map(function (brand) {
+  		brandModels = brandModels.map(function (brand) {
   			return $('<option value="' + brand + '">' + brand + '</option>')
   		});
 
   		var modelSelect = $('select[name="model"]');
 	  	modelSelect.empty();
-	  	modelSelect.append(modelBrands);
+	  	modelSelect.append(brandModels);
   	}
 
-  	window.setTimeout(updateModelsList, 1000);
+  	function updateTextKeys() {
+  		$('[data-elem-id="1585476821869"]').find('em').html($('select[name="brand"]').val() + ' ' + $('select[name="model"]').val());
+  	}
+
+  	window.setTimeout(function() {
+  		updateModelsList();
+  		updateTextKeys();
+  	}, 1000);
 	});
 </script>
