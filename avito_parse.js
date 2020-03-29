@@ -3,8 +3,7 @@
 // 3 клик 
 //
 
-var brands      = [];
-var models      = [];
+var brands      = {};
 var brandIdx    = 0;
 
 async function parse() {
@@ -23,8 +22,6 @@ async function parse() {
 
     let brandName = brandItem.children('span').text();
 
-    brands.push(brandName);
-
     brandItem.click();
 
     await sleep(500);
@@ -39,9 +36,11 @@ async function parse() {
       return brandName + ' ' + elem.innerText;
     });
 
-    models = [...models, ...modelsList];
+    brands[brandName] = modelsList;
 
     $brandInput.next().click();
+
+    console.log('Brands: ' + brandIdx);
 
     await sleep(500);
 
