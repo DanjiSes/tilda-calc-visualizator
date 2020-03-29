@@ -43,8 +43,6 @@ async function parse() {
 
     $brandInput.next().click();
 
-    console.log(brands, models);
-
     await sleep(500);
 
   }
