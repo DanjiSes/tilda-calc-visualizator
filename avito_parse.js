@@ -6,6 +6,8 @@
 var brands      = {};
 var brandIdx    = 0;
 
+var delay = 500;
+
 async function parse() {
   var $brandInput = $('[data-marker="params[110000]/suggest-input"]');
   var $modelInput = $('[data-marker="params[110001]/suggest-input"]');
@@ -13,7 +15,7 @@ async function parse() {
   while (true) {
     $brandInput.click();
 
-    await sleep(500);
+    await sleep(delay);
 
     let brandItem = $('[data-marker="params[110000]/suggest-dropdown"] li[class^="default-item"]').eq(brandIdx++);
 
@@ -24,16 +26,16 @@ async function parse() {
 
     brandItem.click();
 
-    await sleep(500);
+    await sleep(delay);
 
     $modelInput.click();
 
-    await sleep(500);
+    await sleep(delay);
 
     let modelsList = $('[data-marker="params[110001]/suggest-dropdown"] li[class^="default-item"] span')
 
     modelsList = modelsList.map(function(index, elem) {
-      return brandName + ' ' + elem.innerText;
+      return elem.innerText;
     });
 
     brands[brandName] = modelsList;
@@ -42,7 +44,7 @@ async function parse() {
 
     console.log('Brands: ' + brandIdx);
 
-    await sleep(500);
+    await sleep(delay);
 
   }
 
