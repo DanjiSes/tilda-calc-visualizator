@@ -58,7 +58,7 @@
 		function showResult() {
 			$output.html(JSON.stringify($.map($('input:checked'), function(elem) {
 				return $(elem).attr('id');
-			}), undefined, 2));
+			})));
 		}
 
 
