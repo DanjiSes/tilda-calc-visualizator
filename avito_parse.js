@@ -34,7 +34,7 @@ async function parse() {
 
     let modelsList = $('[data-marker="params[110001]/suggest-dropdown"] li[class^="default-item"] span')
 
-    modelsList = modelsList.map(function(index, elem) {
+    modelsList = $.map(modelsList, function(elem) {
       return elem.innerText;
     });
 
