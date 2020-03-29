@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Выбор брендов</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+	<style>
+		html {
+			font-size: 18px;
+		}
+	</style>
+</head>
+<body>
+	
+	<div id="app" class="container py-3">
+		<h3>Выберите необходимые марки</h3>
+
+	</div>
+
+	<div class="container">
+		<pre id="output" class="p-3 bg-light"></pre>
+	</div>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<script>
+		var brands = ["Audi","Отечественные","Audi","BMW","Chevrolet","Ford","Honda","Hyundai","KIA","Lexus","Mazda","Mercedes-Benz","Mitsubishi","Nissan","Opel","Renault","Skoda","Toyota","Volkswagen","ВАЗ (LADA)","ГАЗ","УАЗ","AC","Acura","Adler","Alfa Romeo","Alpina","AMC","AM General","Aro","Asia","Aston Martin","Audi","Austin","Bajaj","Barkas","BAW","Bentley","BMW","Brilliance","Bugatti","Buick","BYD","Cadillac","Caterham","Changan","ChangFeng","Changhe","Chery","Chevrolet","Chrysler","Citroen","Dacia","Dadi","FSO","Daihatsu","Daimler","Datsun","DeLorean","Derways","DKW","Dodge","Dongfeng","Doninvest","DS","DW Hower","Eagle","Excalibur","FAW","Ferrari","FIAT","Fisker","Ford","Foton","FSO","GAC","Geely","Genesis","Geo","GMC","Great Wall","Graham-Paige","Groz","Hafei","Haima","Hanomag","Haval","Hawtai","Honda","Huanghai","Hudson","Hummer","Hyundai","Infiniti","Iran Khodro","Isuzu","Iveco","JAC","Jaguar","Jeep","Jinbei","JMC","Jonway","KIA","Lamborghini","Lancia","Land Rover","Landwind","LDV","Lexus","Leyland","Lichi","LIFAN","Lincoln","Lotus","LTI","Luxgen","Mahindra","Maserati","Maybach","Mazda","McLaren","Mercedes-Benz","Mercury","Metrocab","MG","MINI","Mitsubishi","Mitsuoka","Morgan","Morris","Nissan","Nysa","Oldsmobile","Opel","Peugeot","Plymouth","Pontiac","Porsche","Proton","PUCH","Ravon","Renault","Renault Samsung","Rolls-Royce","Ronart","Rover","Saab","Saleen","Saturn","Scion","SEAT","Shuanghuan","Skoda","SMA","Smart","SsangYong","Studebaker","Subaru","Suzuki","Talbot","Tata","Tatra","Tesla","Tazzari","Tianma","Tianye","Toyota","Trabant","Triumph","Vauxhall","Volkswagen","Volvo","Vortex","Wanderer","Wartburg","Westfield","Willys","Xin Kai","Zastava","Zibar","ZOTYE","Zuk","ZX","Автокам","Апал","Богдан","ВАЗ (LADA)","ВИС","ГАЗ","ЕрАЗ","ЗАЗ","ЗИЛ","ЗиС","ИЖ","Канонир","Комбат","ЛуАЗ","Москвич","РАФ","Руссо-Балт","СМЗ","ТагАЗ","УАЗ"];
+
+		var selected = JSON.parse(localStorage.getItem('selectedb')) || [];
+		var $app = $('#app');
+		var $output = $('#output');
+
+		function setSelected() {
+			selected = $.map($('input:checked'), function(elem) {
+				return elem.value;
+			});
+
+			localStorage.setItem('selectedb', JSON.stringify(selected));
+		}
+
+		function getBrandItem(name, idx, checked) {
+			let item = $(`
+				<div class="custom-control custom-checkbox">
+					<input type="checkbox" class="custom-control-input" id="${name}" value="${idx}" ${checked ? 'checked' : ''}>
+					<label class="custom-control-label" for="${name}">${name}</label>
+				</div>
+			`);
+
+			item.on('change', function() {
+				setSelected();
+				showResult();
+			});
+
+			return item;
+		}
+
+		function showResult() {
+			$output.html(JSON.stringify($.map($('input:checked'), function(elem) {
+				return $(elem).attr('id');
+			}), undefined, 2));
+		}
+
+
+		for (let i = 0; i < brands.length; i++) {
+			let name = brands[i];
+
+			$app.append(getBrandItem(name, i, (selected.length === 0 || selected.indexOf(i + '') !== -1)));
+		}
+
+		showResult();
+	</script>
+</body>
+</html>
