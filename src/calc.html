@@ -18,22 +18,28 @@ $(document).ready(function() {
 
     // Сюа вставляем id блока с калькулятором
     calcBlockId: 'rec172399090',
-    // Сюда id бока с товаром
-    productID: 'rec173808887',
-    // Список полей которые пойдут в корзину
-    fields: [
+    // Блоки с товаром для добавления в корзину
+    products: [
       {
-        label: 'Марка авто / модель',
-        value: '{{brand}} - {{model}}'
-      },
-      {
-        label: 'Ковер',
-        value: '{{carpet-color}} ({{structure}})'
-      },
-      {
-        label: 'Кант',
-        value: '{{border-color}}'
-      },
+        id: 'rec173808887',
+        title: 'Ковер для авто',
+        prise: 'sum',
+        // Список полей которые пойдут в корзину
+        fields: [
+          {
+            label: 'Марка авто / модель',
+            value: '{{brand}} - {{model}}'
+          },
+          {
+            label: 'Ковер',
+            value: '{{carpet-color}} {{structure}}'
+          },
+          {
+            label: 'Кант',
+            value: '{{border-color}}'
+          },
+        ],
+      }
     ],
     hidden: [
       {
@@ -46,11 +52,11 @@ $(document).ready(function() {
         ]
       }
     ],
-    debug: true,
 
     /*
     * Конфигурация скрипта
     */
+    debug: true,
 
     // Шаблонизатор
     regex: /{{(.+?)}}/gm,
@@ -63,6 +69,8 @@ $(document).ready(function() {
   // Добавление товара в корзину
   getForms().parent('.tn-atom__form').on('click', '.t-submit', addToCart);
 
+  // Скрыть блоки с продуктами
+  !config.debug && hideProductBlocks();
 
   // Инициализация скрипта
   render();
@@ -154,25 +162,34 @@ $(document).ready(function() {
 
   }
 
+  function hideProductBlocks() {
+
+    var styles = config.products.map(function(product) {
+      return '#' + product.id;
+    }).join(',') + '{display: none}';
+
+    $('body').append('<style>' + styles +'</style>');
+  }
+
   function addToCart() {
 
+    for (var i = 0; i < config.products.length; i++) {
 
-    var $product        = $('#' + config.productID),
-        $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
+      var $product        = $('#' + config.products[i].id),
+          $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
 
-    $fieldsWrapper.empty();
+      var fields = config.products[i].fields.map(function(field) {
+        return getProductParam(field.label, applyMask(field.value));
+      })
 
-    var fields = config.fields.map(function(field) {
-      return getProductParam(field.label, applyMask(field.value));
-    })
+      $fieldsWrapper.append(fields);
 
-    $fieldsWrapper.append(fields);
+      var sum = getFormInputVal('sum');
 
-    var sum = getFormInputVal('sum');
+      $product.find('.t744__price-value').html(sum);
 
-    $product.find('.t744__price-value').html(sum);
-
-    setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
+      setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
+    }
 
     return false;
   }
