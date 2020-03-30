@@ -1,0 +1,242 @@
+<script type="text/javascript">
+
+/*
+* Настраиваемый скрипт для простого создания
+* калькуляторов с визуализацией на Тильда
+*
+* Автор: Данил Савченко (https://vk.com/zzzzappp)
+* Видео-инструкция: скоро
+*/
+
+
+$(document).ready(function() {
+
+  var config = {
+    /*
+    * Пользовательская конфигурация
+    */
+
+    // Сюа вставляем id блока с калькулятором
+    calcBlockId: 'rec172399090',
+    // Блоки с товаром для добавления в корзину
+    products: [
+      {
+        id: 'rec173808887',
+        title: 'Коврик для машины',
+        price: 'sum',
+        // Список полей которые пойдут в корзину
+        fields: [
+          {
+            label: 'Марка авто / модель',
+            value: '{{brand}} - {{model}}'
+          },
+          {
+            label: 'Ковер',
+            value: '{{carpet-color}} {{structure}}'
+          },
+          {
+            label: 'Кант',
+            value: '{{border-color}}'
+          },
+          {
+            label: '3D Формовка',
+            value: '{{dop4}}'
+          },
+        ],
+      },
+      {
+        id: 'rec174739829',
+        title: 'Шильдик',
+        price: 'dop1',
+        fields: []
+      },
+      {
+        id: 'rec174982300',
+        title: 'Подпятник',
+        price: 'dop2',
+        fields: []
+      },
+      {
+        id: 'rec174983689',
+        title: 'Ковер в багажник',
+        price: 'dop3',
+        fields: []
+      }
+    ],
+    hidden: [
+      {
+        conditional: 'structure=Соты',
+        fields: [
+          {
+            name: 'carpet-color',
+            values: ['бордовый', 'желтый']
+          }
+        ]
+      }
+    ],
+
+    // Дефолтное значение параметров маски
+    defaultMask: '-',
+    /*
+    * Конфигурация скрипта
+    */
+    debug: true,
+
+    // Шаблонизатор
+    regex: /{{(.+?)}}/gm,
+  };
+
+
+  // Отслеживание каких либо изменений в форме
+  getForms().parent('.tn-atom__form').on('change', 'input, select', render);
+
+  // Добавление товара в корзину
+  getForms().parent('.tn-atom__form').on('click', '.t-submit', addToCart);
+
+  // Скрыть блоки с продуктами
+  !config.debug && hideProductBlocks();
+
+  // Инициализация скрипта
+  render();
+
+  /**
+  * Далее идет код скрипта
+  */
+
+  function getForms() { return $('#' + config.calcBlockId).find('form') };
+
+  function getFormInputVal(name, calcVal) {
+    calcVal = calcVal || false
+
+    var val = getForms().serializeArray()
+      .find(function(input) {
+        return input.name === name;
+      });
+
+    val = (val && val.value);
+
+    if (calcVal && val && isNaN(parseFloat(val))) {
+      val = getForms().find('[name="' + name + '"]').first().data('calc-value')
+    }
+
+    return val || (calcVal ? 0 : '');
+  }
+
+  function applyMask(mask) {
+    return mask.replace(config.regex, function(match, name) {
+      return getFormInputVal(name) || config.defaultMask;
+    });
+  }
+
+  // Фабрика дополнительных параметров для товара
+  function getProductParam(label, value) {
+    return $('<div class="t-product__option js-product-option"> <div class="t-product__option-title t-descr t-descr_xxs js-product-option-name">' + label + '</div> <div class="t-product__option-variants"> <select class="t-product__option-select t-descr t-descr_xxs js-product-option-variants"> <option value="' + value + '" data-product-variant-price="">' + value + '</option> </select> </div> </div>');
+  }
+
+  function render() {
+
+    var targetSelector =  getFormInputVal('target');
+
+    if (!targetSelector) console.error('Добавьте в форму скрытое поле target');
+
+    var target    = $(targetSelector),
+        views     = target.children('.preview-part');
+
+    // Скрываю небоходимые поля
+    $('#calc-hidden-fields').remove();
+
+    for (var i = 0; i < config.hidden.length; i++) {
+      var hide = config.hidden[i];
+      var cond = hide.conditional.split('=');
+
+      if (getFormInputVal(cond[0]) === cond[1]) {
+        var fields = hide.fields;
+
+        for (var f = 0; f < fields.length; f++) {
+          var field   = fields[f];
+          var values  = field.values;
+          var masks   = field.masks;
+
+          var styles = values.map(function(value) {
+            return '[name="' + field.name + '"][value="' + value + '"]~.t-img-select__indicator {display: none}';
+          }).join('');
+
+          $('body').append('<style id="calc-hidden-fields">' + styles + '</style>');
+        }
+      }
+    }
+
+    // Применяю визуализацию
+    views.each(function(index, el) {
+      el = $(el);
+
+      var imgMask = el.data('image');
+
+      if (!imgMask) console.error('Добавьте маску элементу .preview-part');
+
+      var currentAlt = el.data('current-alt') || '';
+      var resultAlt = applyMask(imgMask);
+
+      if (currentAlt === resultAlt) return;
+
+      config.debug && console.log(resultAlt);
+      
+      el.empty();
+
+      el.data('current-alt', resultAlt);
+
+      var img = $('img[alt="' + resultAlt + '"]');
+      
+      el.append(img.first().clone());
+
+    });
+
+  }
+
+  function hideProductBlocks() {
+
+    var styles = config.products.map(function(product) {
+      return '#' + product.id;
+    }).join(',') + '{display: none}';
+
+    $('body').append('<style>' + styles +'</style>');
+  }
+
+  function addToCart() {
+
+    for (var i = 0; i < config.products.length; i++) {
+
+      let productData     = config.products[i],
+          $product        = $('#' + productData.id),
+          $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
+
+      var fields = productData.fields.map(function(field) {
+        return getProductParam(field.label, applyMask(field.value));
+      });
+
+      $fieldsWrapper.empty();
+      $fieldsWrapper.append(fields);
+
+      var price = getFormInputVal(productData.price, true);
+
+      if (!price) continue;
+
+      // Костыль для вычета допов из общей стоимости коврика
+      if (productData.price === 'sum') {
+        price -= getFormInputVal('dop1', true)
+        price -= getFormInputVal('dop2', true)
+        price -= getFormInputVal('dop3', true)
+      }
+
+      $product.find('.t744__price-value').html(price);
+      $product.find('.t744__title').html(applyMask(productData.title));
+
+      setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
+    }
+
+    return false;
+  }
+
+});
+
+</script>
