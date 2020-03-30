@@ -22,7 +22,7 @@ $(document).ready(function() {
     products: [
       {
         id: 'rec173808887',
-        title: 'Ковер для авто',
+        title: 'Коврик для машины',
         prise: 'sum',
         // Список полей которые пойдут в корзину
         fields: [
@@ -81,11 +81,17 @@ $(document).ready(function() {
 
   function getForms() { return $('#' + config.calcBlockId).find('form') };
 
-  function getFormInputVal(name) {
+  function getFormInputVal(name, calcVal) {
+    calcVal = calcVal || false
+
     var val = getForms().serializeArray()
       .find(function(input) {
         return input.name === name;
       });
+
+    if (calcVal && Number.isNaN(val)) {
+      val = getForms().find('name=[' + name + ']').first().data('calc-value');
+    }
 
     return (val && val.value) || '';
   }
