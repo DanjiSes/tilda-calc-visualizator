@@ -45,6 +45,12 @@ $(document).ready(function() {
         title: 'Шильдик',
         price: 'dop1',
         fields: []
+      },
+      {
+        id: 'rec174982300',
+        title: 'Подпятник',
+        price: 'dop1',
+        fields: []
       }
     ],
     hidden: [
@@ -209,7 +215,7 @@ $(document).ready(function() {
       }
 
       $product.find('.t744__price-value').html(price);
-      $product.find('.t744__title').html(productData.title);
+      $product.find('.t744__title').html(applyMask(productData.title));
 
       setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
     }
