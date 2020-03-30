@@ -23,7 +23,7 @@ $(document).ready(function() {
       {
         id: 'rec173808887',
         title: 'Коврик для машины',
-        prise: 'sum',
+        price: 'sum',
         // Список полей которые пойдут в корзину
         fields: [
           {
@@ -39,6 +39,12 @@ $(document).ready(function() {
             value: '{{border-color}}'
           },
         ],
+      },
+      {
+        id: 'rec174739829',
+        title: 'Шильдик',
+        price: 'dop1',
+        fields: []
       }
     ],
     hidden: [
@@ -89,11 +95,13 @@ $(document).ready(function() {
         return input.name === name;
       });
 
-    if (calcVal && Number.isNaN(val)) {
-      val = getForms().find('name=[' + name + ']').first().data('calc-value');
+    val = (val && val.value);
+
+    if (calcVal && val && isNaN(parseFloat(val))) {
+      val = getForms().find('[name="' + name + '"]').first().data('calc-value')
     }
 
-    return (val && val.value) || '';
+    return val || 0;
   }
 
   function applyMask(mask) {
@@ -150,7 +158,6 @@ $(document).ready(function() {
 
       var currentAlt = el.data('current-alt') || '';
       var resultAlt = applyMask(imgMask);
-        
 
       if (currentAlt === resultAlt) return;
 
@@ -181,18 +188,28 @@ $(document).ready(function() {
 
     for (var i = 0; i < config.products.length; i++) {
 
-      var $product        = $('#' + config.products[i].id),
+      let productData     = config.products[i],
+          $product        = $('#' + productData.id),
           $fieldsWrapper  = $product.find('.js-product-controls-wrapper');
 
-      var fields = config.products[i].fields.map(function(field) {
+      var fields = productData.fields.map(function(field) {
         return getProductParam(field.label, applyMask(field.value));
-      })
+      });
 
+      $fieldsWrapper.empty();
       $fieldsWrapper.append(fields);
 
-      var sum = getFormInputVal('sum');
+      var price = getFormInputVal(productData.price, true);
 
-      $product.find('.t744__price-value').html(sum);
+      if (!price) continue;
+
+      // Костыль для вычета шильдика из общей стоимости коврика
+      if (productData.price === 'sum') {
+        price -= getFormInputVal('dop1', true)
+      }
+
+      $product.find('.t744__price-value').html(price);
+      $product.find('.t744__title').html(productData.title);
 
       setTimeout(function() {  $product.find(".t744__btn")[0].click(); }, 100);
     }
