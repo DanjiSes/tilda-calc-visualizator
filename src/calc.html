@@ -137,7 +137,7 @@ $(document).ready(function() {
 
     var targetSelector =  getFormInputVal('target');
 
-    if (!targetSelector) throw new Error('Добавьте в форму скрытое поле target');
+    if (!targetSelector) console.error('Добавьте в форму скрытое поле target');
 
     var target    = $(targetSelector),
         views     = target.children('.preview-part');
@@ -172,7 +172,7 @@ $(document).ready(function() {
 
       var imgMask = el.data('image');
 
-      if (!imgMask) throw new Error('Добавьте маску элементу .preview-part');
+      if (!imgMask) console.error('Добавьте маску элементу .preview-part');
 
       var currentAlt = el.data('current-alt') || '';
       var resultAlt = applyMask(imgMask);
