@@ -38,6 +38,10 @@ $(document).ready(function() {
             label: 'Кант',
             value: '{{border-color}}'
           },
+          {
+            label: '3D Формовка',
+            value: '{{dop4}}'
+          },
         ],
       },
       {
@@ -49,7 +53,13 @@ $(document).ready(function() {
       {
         id: 'rec174982300',
         title: 'Подпятник',
-        price: 'dop1',
+        price: 'dop2',
+        fields: []
+      },
+      {
+        id: 'rec174983689',
+        title: 'Ковер в багажник',
+        price: 'dop3',
         fields: []
       }
     ],
@@ -65,6 +75,8 @@ $(document).ready(function() {
       }
     ],
 
+    // Дефолтное значение параметров маски
+    defaultMask: '-',
     /*
     * Конфигурация скрипта
     */
@@ -107,12 +119,12 @@ $(document).ready(function() {
       val = getForms().find('[name="' + name + '"]').first().data('calc-value')
     }
 
-    return val || 0;
+    return val || (calcVal ? 0 : '');
   }
 
   function applyMask(mask) {
     return mask.replace(config.regex, function(match, name) {
-      return getFormInputVal(name);
+      return getFormInputVal(name) || config.defaultMask;
     });
   }
 
@@ -209,9 +221,11 @@ $(document).ready(function() {
 
       if (!price) continue;
 
-      // Костыль для вычета шильдика из общей стоимости коврика
+      // Костыль для вычета допов из общей стоимости коврика
       if (productData.price === 'sum') {
         price -= getFormInputVal('dop1', true)
+        price -= getFormInputVal('dop2', true)
+        price -= getFormInputVal('dop3', true)
       }
 
       $product.find('.t744__price-value').html(price);
