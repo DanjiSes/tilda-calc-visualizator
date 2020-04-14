@@ -122,9 +122,11 @@ $(document).ready(function() {
     return val || (calcVal ? 0 : '');
   }
 
-  function applyMask(mask) {
+  function applyMask(mask, withDefaults) {
     return mask.replace(config.regex, function(match, name) {
-      return getFormInputVal(name) || config.defaultMask;
+      var name = name.split(':');
+
+      return (withDefaults && name[1]) || getFormInputVal(name[0]) || config.defaultMask;
     });
   }
 
@@ -174,8 +176,9 @@ $(document).ready(function() {
 
       if (!imgMask) console.error('Добавьте маску элементу .preview-part');
 
-      var currentAlt = el.data('current-alt') || '';
-      var resultAlt = applyMask(imgMask);
+      var currentAlt  = el.data('current-alt') || '';
+      var resultAlt   = applyMask(imgMask);
+      var defaultAlt  = applyMask(imgMask, true);
 
       if (currentAlt === resultAlt) return;
 
@@ -186,6 +189,8 @@ $(document).ready(function() {
       el.data('current-alt', resultAlt);
 
       var img = $('img[alt="' + resultAlt + '"]');
+
+      if (!img.length) img = $('img[alt="' + defaultAlt + '"]');
       
       el.append(img.first().clone());
 
